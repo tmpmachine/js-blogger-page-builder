@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "node server"
+  },
+  "type": "module",
+  "devDependencies": {
+    "express": "^4.21.1",
+    "serve-index": "^1.9.1"
+  }
+}

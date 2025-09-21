@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+
+    <!-- template root container -->
+    <div class="_app"></div>
+
+
+    <!-- template tags goes here -->
+    <template class="_appTemplate">
+        
+        <!-- header -->
+        <b-include template="Header"></b-include>
+        
+        <!-- page links -->
+        Page Links:
+        <b-widget id="LinkList1" template="PageLinks"></b-widget>
+        <br>
+
+        <!-- blog posts -->
+        Latest Posts:
+        <b-widget id="Blog1" template="BlogWidget"></b-widget>
+        <hr>
+
+        <!-- footer -->
+        <b-section id="footer"></b-section>
+
+
+        <!-- templates  -->
+        <!-- =========  -->
+        <template id="Header">
+            <h1 b-if="view.isHomepage">
+                <a b-attr-href="blog.homepageUrl">Blog Title</a>
+            </h1>
+            <h1 b-if="!view.isHomepage">Blog Title</h1>
+        </template>
+
+        <template id="PageLinks">
+            <div b-data="links" b-template="PageLinkList"></div>
+        </template>
+        <template id="PageLinkList">
+            <a b-attr-href="target" b-data="name"></a>
+        </template>
+
+        <template id="BlogWidget">
+            <div b-data="posts" b-template="PostWidget"></div>
+            <br>
+
+            <a b-attr-href="newerPageUrl">Newer Post</a>
+            <a b-attr-href="olderPageUrl">Older Post</a>
+        </template>
+        <template id="PostWidget">
+            <div>
+                <a b-attr-href="url" b-data="title"></a>
+                <small b-data="date"></small>
+            </div>
+        </template>
+
+        <!-- shared templates -->
+        <template id="LinkList">
+            <div b-data="title"></div>
+            <ul b-data="links" b-template="DefaultLinkList"></ul>
+        </template>
+        <template id="DefaultLinkList">
+            <li>
+                <a b-attr-href="target" b-data="name"></a>
+            </li>
+        </template>
+
+    </template>
+
+    
+    <!-- builder scripts -->
+    <script src="../builder.js"></script>
+    <script>
+        let app = appBuilder({
+            dataPath: 'page-data',
+            // fileName: 'homepage.html',
+        });
+        app.init();
+    </script>
+
+</body>
+
+</html>
