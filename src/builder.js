@@ -1,6 +1,5 @@
 // @ts-check
 
-// version: 6.0
 function appBuilder(options) {
 	// #vars
 	let $ = document.querySelector.bind(document);
@@ -252,7 +251,7 @@ function appBuilder(options) {
 						let includableData = v;
 						const widgetBuilder = Object.create(widgetBase);
 
-						widgetBuilder.data = Object.assign(includableData, _globalData);
+						widgetBuilder.data = Object.assign(includableData, _globalData, data);
 						widgetBuilder.templateSelector = `#${templateName}`;
 
 						const childNodes = widgetBuilder.build();
