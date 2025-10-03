@@ -1,3 +1,5 @@
 node_modules
-page-data
 .vscode
+
+# it is recommended to ignore page data folder
+# page-data 
