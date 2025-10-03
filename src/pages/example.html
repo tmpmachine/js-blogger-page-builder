@@ -38,9 +38,10 @@
         <!-- =========  -->
         <template id="Header">
             <h1 b-if="view.isHomepage">
-                <a b-attr-href="blog.homepageUrl">Blog Title</a>
+                <a b-attr-href="blog.homepageUrl" b-data="blog.title"></a>
             </h1>
             <h1 b-if="!view.isHomepage">Blog Title</h1>
+            <p b-data="view.description"></h1>
         </template>
 
         <template id="PageLinks">
@@ -82,8 +83,9 @@
     <script src="../builder.js"></script>
     <script>
         let app = appBuilder({
-            dataPath: 'page-data',
-            // fileName: 'homepage.html',
+            dataPath: '../page-data',
+            isDevelopment: true,
+            // fileName: 'example.html',
         });
         app.init();
     </script>
