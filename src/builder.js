@@ -11,7 +11,7 @@ function appBuilder(options) {
 	let countMap = 0;
 	let downloadableTemplate = null;
 	let _globalData = {};
-	let _isDevelopment = location.port ? true : false;
+	let _isDevelopment = options.isDevelopment ?? (location.port ? true : false);
 
 	// #function
 
