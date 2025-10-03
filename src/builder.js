@@ -1,5 +1,6 @@
 // @ts-check
 
+// version: 6.3
 function appBuilder(options) {
 	// #vars
 	let $ = document.querySelector.bind(document);
@@ -190,41 +191,42 @@ function appBuilder(options) {
 	}
 
 	// #condition
+	function evalKey(key, data, dataMap) {
+		let isInverse = false;
+		if (key.startsWith('!')) {
+			isInverse = true;
+			key = key.slice(1);
+		}
+		let evalResult = false;
+		let dataKey = data[key];
+		if (dataKey && dataMap[dataKey]) {
+			let dataVal = dataMap[dataKey];
+			if (dataVal.getAttribute('type') === 'boolean') {
+				evalResult = JSON.parse(dataVal.textContent);
+			} else {
+				evalResult = dataVal?.textContent?.trim().length > 0;
+			}
+		}
+		return isInverse ? !evalResult : evalResult;
+	}
+
+	function evalExpr(str, data, dataMap) {
+		let orParts = str.split(/\s+or\s+/i).map(s => s.trim());
+		return orParts.some(orPart => {
+			let andParts = orPart.split(/\s+and\s+/i).map(s => s.trim());
+			return andParts.every(key => evalKey(key, data, dataMap));
+		});
+	}
+
 	function removeConditionalWidgets(container = devTemplate, data = {}) {
 		let nodes = container.querySelectorAll('[b-if]');
 
 		for (const node of nodes) {
-			let key = node.getAttribute('b-if');
-			let isInverse = false;
+			let expr = node.getAttribute('b-if').trim();
+			let isCondMet = evalExpr(expr, data, dataMap);
 
-			if (key.startsWith('!')) {
-				isInverse = true;
-				key = key.slice(1);
-			}
-
-			let evalResult = false;
-			let dataKey = data[key];
-
-			if (dataKey && dataMap[dataKey]) {
-				let dataVal = dataMap[dataKey];
-				if (dataVal.getAttribute('type') == 'boolean') {
-					evalResult = JSON.parse(dataVal.textContent);
-				} else {
-					evalResult = dataVal?.textContent?.trim().length > 0;
-				}
-			}
-
-			let isCondMet = evalResult;
-
-			if (isInverse) {
-				isCondMet = !evalResult;
-			}
-
-			if (!isCondMet) {
-				node.remove();
-			}
-
-			node.removeAttribute('b-if');
+			if (!isCondMet) node.remove();
+			else node.removeAttribute('b-if');
 		}
 	}
 
