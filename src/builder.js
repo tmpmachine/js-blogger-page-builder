@@ -251,7 +251,11 @@ function appBuilder(options) {
 						let includableData = v;
 						const widgetBuilder = Object.create(widgetBase);
 
-						widgetBuilder.data = Object.assign(includableData, _globalData, data);
+						widgetBuilder.data = {
+							..._globalData,
+							...data,
+							...includableData,
+						};
 						widgetBuilder.templateSelector = `#${templateName}`;
 
 						const childNodes = widgetBuilder.build();
