@@ -1,6 +1,6 @@
 // @ts-check
 
-// version: 6.3
+// version: 6.4
 function appBuilder(options) {
 	// #vars
 	let $ = document.querySelector.bind(document);
@@ -59,7 +59,7 @@ function appBuilder(options) {
 			if (!widget) {
 				widget = {
 					id: node.id,
-					title: node.content.querySelector('[slot="title"]')?.textContent.trim(),
+					title: node.content.querySelector('[key="title"]')?.textContent.trim(),
 					sectionId: node.parentElement?.parentElement?.id,
 					data: {},
 				};
@@ -177,6 +177,11 @@ function appBuilder(options) {
 
 			// replace include tags inside templates
 			// replaceIncludables(docEl, templateTag);
+
+			if (!templateTag) {
+				console.log(`template not found for b-include:`, target);
+				return;
+			}
 
 			includeTag.parentNode.insertBefore(templateTag.content.cloneNode(true), includeTag);
 			includeTag.remove();
