@@ -1,6 +1,6 @@
 // @ts-check
 
-// version: 6.4
+// version: 6.6
 function appBuilder(options) {
 	// #vars
 	let $ = document.querySelector.bind(document);
@@ -11,7 +11,7 @@ function appBuilder(options) {
 	let countMap = 0;
 	let downloadableTemplate = null;
 	let _globalData = {};
-	let _isDevelopment = options.isDevelopment ?? (location.port ? true : false);
+	let _isDevelopment = options?.isDevelopment ?? (location.port ? true : false);
 
 	// #function
 
@@ -173,15 +173,17 @@ function appBuilder(options) {
 	function replaceIncludables(topLevel, parentNode) {
 		for (let includeTag of parentNode.content.querySelectorAll('b-include')) {
 			let target = includeTag.getAttribute('template');
-			let templateTag = topLevel.content.querySelector(`template#${target}`);
 
-			// replace include tags inside templates
-			// replaceIncludables(docEl, templateTag);
+			// get template from current level or up
+			let templateTag = parentNode.content.querySelector(`template#${target}`) || topLevel.content.querySelector(`template#${target}`);
 
 			if (!templateTag) {
 				console.log(`template not found for b-include:`, target);
 				return;
 			}
+
+			// replace include tags inside templates
+			replaceIncludables(topLevel, templateTag);
 
 			includeTag.parentNode.insertBefore(templateTag.content.cloneNode(true), includeTag);
 			includeTag.remove();
