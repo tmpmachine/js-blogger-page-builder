@@ -8,8 +8,6 @@ npm i
 
 # start development server
 npm run dev
-# or
-node server
 ```
 
 ## Page Data Setup
@@ -21,9 +19,8 @@ Store data source in `src/page-data` folder.
 Run in console:
 
 ```js
-app.DownloadTemplate();
-
-// or copy
-
 app.CopyTemplate();
+
+// or download
+app.DownloadTemplate();
 ```
