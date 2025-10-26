@@ -1,6 +1,6 @@
 // @ts-check
 
-// version: 6.6
+// version: 6.7
 function appBuilder(options) {
 	// #vars
 	let $ = document.querySelector.bind(document);
@@ -8,6 +8,7 @@ function appBuilder(options) {
 	let widgets = [];
 	let dataDoc = document;
 	let dataMap = [];
+	let htmlWidgets = [];
 	let countMap = 0;
 	let downloadableTemplate = null;
 	let _globalData = {};
@@ -164,6 +165,8 @@ function appBuilder(options) {
 			$('._app').replaceChildren(...devTemplate.childNodes);
 		}
 
+		htmlWidgets.forEach(node => reexecuteScripts(node));
+
 		// release from memory
 		if (!_isDevelopment) {
 			widgets.length = 0;
@@ -317,14 +320,20 @@ function appBuilder(options) {
 				let widgetType = getWidgetType(instanceId);
 				let templateNode = devTemplate.querySelector(`template#${widgetType}[b-section="${sectionId}"]`) || devTemplate.querySelector(`template#${widgetType}`);
 
+				if (widgetType == 'HTML') {
+					htmlWidgets.push(widgetNode);
+				}
+
 				if (!templateNode) {
+					// display as is
+					node.parentNode.insertBefore(widgetNode, node)
 					return;
 				}
 
 				let widgetBuilder = Object.create(widgetBase);
 				let widgetData = widgets.find((e) => e.id == instanceId);
 
-				widgetBuilder.data = Object.assign(widgetData.data, _globalData);
+				widgetBuilder.data = Object.assign(widgetData?.data ?? {}, _globalData);
 				widgetBuilder.templateNode = templateNode;
 
 				const childNode = widgetBuilder.build();
@@ -366,6 +375,18 @@ function appBuilder(options) {
 			node.parentNode.insertBefore(childNode, node);
 			node.remove();
 		}
+	}
+
+	function reexecuteScripts(root = document) {
+		const scripts = root.querySelectorAll('script');
+		scripts.forEach(oldScript => {
+			const newScript = document.createElement('script');
+			[...oldScript.attributes].forEach(attr =>
+				newScript.setAttribute(attr.name, attr.value)
+			);
+			newScript.textContent = oldScript.textContent;
+			oldScript.replaceWith(newScript);
+		});
 	}
 
 	// #self
