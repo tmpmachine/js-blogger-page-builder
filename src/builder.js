@@ -390,7 +390,6 @@ function appBuilder(options) {
 
 	// #self
 	let SELF = {
-		isPageRendered: false,
 		GetWidgetsData: () => widgets,
 
 		DownloadTemplate() {
@@ -441,7 +440,7 @@ function appBuilder(options) {
 			await build_();
 
 			// for use in application script
-			SELF.isPageRendered = true;
+			$('._app').dataset.isReady = true;
 		},
 	};
 
