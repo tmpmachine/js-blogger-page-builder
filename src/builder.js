@@ -1,6 +1,6 @@
 // @ts-check
 
-// version: 6.7
+// version: 6.8
 function appBuilder(options) {
 	// #vars
 	let $ = document.querySelector.bind(document);
@@ -75,7 +75,6 @@ function appBuilder(options) {
 	const widgetBase = {
 		templateSelector: '',
 		templadeNode: null,
-		isReady: false,
 		data: {},
 		build() {
 			let docFrag = document.createDocumentFragment();
@@ -390,7 +389,8 @@ function appBuilder(options) {
 	}
 
 	// #self
-	return {
+	let SELF = {
+		isPageRendered: false,
 		GetWidgetsData: () => widgets,
 
 		DownloadTemplate() {
@@ -441,7 +441,9 @@ function appBuilder(options) {
 			await build_();
 
 			// for use in application script
-			window['isAppReady'] = true;
+			SELF.isPageRendered = true;
 		},
 	};
+
+	return SELF;
 }
