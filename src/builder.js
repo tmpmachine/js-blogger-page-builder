@@ -1,10 +1,11 @@
 // @ts-check
 
-// version: 6.8
+// version: 6.9
 function appBuilder(options) {
 	// #vars
 	let $ = document.querySelector.bind(document);
 	let devTemplate = null;
+	let sections = {};
 	let widgets = [];
 	let dataDoc = document;
 	let dataMap = [];
@@ -65,6 +66,14 @@ function appBuilder(options) {
 					data: {},
 				};
 				widgets.push(widget);
+
+				if (widget.sectionId != '') {
+					if (!sections[widget.sectionId]) {
+						sections[widget.sectionId] = [];
+					}
+
+					sections[widget.sectionId].push(widget);
+				}
 			}
 
 			readChildData(node.content.firstElementChild, widget.data);
@@ -85,8 +94,7 @@ function appBuilder(options) {
 			}
 
 			let data = this.data;
-			let containerEl =
-				(templateNode.content ?? templateNode).cloneNode(true) ?? document.createDocumentFragment();
+			let containerEl = (templateNode.content ?? templateNode).cloneNode(true) ?? document.createDocumentFragment();
 
 			removeConditionalWidgets(containerEl, data);
 			fillDataSlots(containerEl, data);
@@ -164,11 +172,12 @@ function appBuilder(options) {
 			$('._app').replaceChildren(...devTemplate.childNodes);
 		}
 
-		htmlWidgets.forEach(node => reexecuteScripts(node));
+		htmlWidgets.forEach((node) => reexecuteScripts(node));
 
 		// release from memory
 		if (!_isDevelopment) {
 			widgets.length = 0;
+			sections = {};
 		}
 	}
 
@@ -220,10 +229,10 @@ function appBuilder(options) {
 	}
 
 	function evalExpr(str, data, dataMap) {
-		let orParts = str.split(/\s+or\s+/i).map(s => s.trim());
-		return orParts.some(orPart => {
-			let andParts = orPart.split(/\s+and\s+/i).map(s => s.trim());
-			return andParts.every(key => evalKey(key, data, dataMap));
+		let orParts = str.split(/\s+or\s+/i).map((s) => s.trim());
+		return orParts.some((orPart) => {
+			let andParts = orPart.split(/\s+and\s+/i).map((s) => s.trim());
+			return andParts.every((key) => evalKey(key, data, dataMap));
 		});
 	}
 
@@ -325,7 +334,7 @@ function appBuilder(options) {
 
 				if (!templateNode) {
 					// display as is
-					node.parentNode.insertBefore(widgetNode, node)
+					node.parentNode.insertBefore(widgetNode, node);
 					return;
 				}
 
@@ -337,10 +346,10 @@ function appBuilder(options) {
 
 				const childNode = widgetBuilder.build();
 
-				node.parentNode.insertBefore(childNode, node)
+				node.parentNode.insertBefore(childNode, node);
 			});
 
-			node.remove()
+			node.remove();
 		}
 	}
 
@@ -378,11 +387,9 @@ function appBuilder(options) {
 
 	function reexecuteScripts(root = document) {
 		const scripts = root.querySelectorAll('script');
-		scripts.forEach(oldScript => {
+		scripts.forEach((oldScript) => {
 			const newScript = document.createElement('script');
-			[...oldScript.attributes].forEach(attr =>
-				newScript.setAttribute(attr.name, attr.value)
-			);
+			[...oldScript.attributes].forEach((attr) => newScript.setAttribute(attr.name, attr.value));
 			newScript.textContent = oldScript.textContent;
 			oldScript.replaceWith(newScript);
 		});
@@ -393,7 +400,9 @@ function appBuilder(options) {
 		GetWidgetsData: () => widgets,
 
 		DownloadTemplate() {
-			let blob = new Blob([downloadableTemplate.trim()], { type: 'text/html' });
+			let blob = new Blob([downloadableTemplate.trim()], {
+				type: 'text/html',
+			});
 			let url = URL.createObjectURL(blob);
 
 			let el = document.createElement('a');
@@ -414,7 +423,7 @@ function appBuilder(options) {
 			document.body.append(node);
 			node.select();
 			node.setSelectionRange(0, node.value.length);
-			document.execCommand("copy");
+			document.execCommand('copy');
 			node.remove();
 			console.log('Copied to clipboard');
 		},
@@ -434,6 +443,7 @@ function appBuilder(options) {
 			loadData();
 
 			if (_isDevelopment) {
+				console.log('sections in this page:', sections);
 				console.log('widgets in this page:', widgets);
 			}
 
